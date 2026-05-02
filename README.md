@@ -53,3 +53,14 @@ Training over 1000 episodes shows the agent learns to:
 - Turn devices off during unoccupied hours
 - Use low energy mode during mild occupancy
 - Balance comfort and energy saving effectively
+
+## Algorithm Choice
+Q-learning was chosen because the state space (hour, temperature, 
+occupancy, energy) is discrete and small, making a Q-table 
+approach efficient and easy to interpret.
+
+## Training Discussion
+Average reward improves over the first 200 episodes as the agent 
+learns to turn off devices during unoccupied hours. It stabilizes 
+around 0.4-0.5 after epsilon decays, showing the agent has learned 
+a consistent policy.
