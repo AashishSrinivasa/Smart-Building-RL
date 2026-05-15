@@ -1,0 +1,13 @@
+{
+  "run_id": "run_2",
+  "episodes": 1000,
+  "alpha": 0.2,
+  "gamma": 0.95,
+  "epsilon_start": 1.0,
+  "epsilon_min": 0.05,
+  "epsilon_decay": 0.997,
+  "description": "Q-learning v2 \u2014 higher alpha and gamma, slower epsilon decay for deeper exploration",
+  "avg_reward_final": 0.375,
+  "avg_energy_final": 0.1667,
+  "avg_comfort_final": 0.4583
+}

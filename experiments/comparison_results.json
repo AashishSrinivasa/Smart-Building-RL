@@ -1,0 +1,15 @@
+{
+  "fixed_rule": {
+    "avg_reward": 0.3635,
+    "avg_energy": 0.4167,
+    "avg_comfort": 0.5718
+  },
+  "rl_policy": {
+    "avg_reward": 0.4212,
+    "avg_energy": 0.232,
+    "avg_comfort": 0.5372
+  },
+  "energy_reduction_pct": 44.32,
+  "reward_improvement_pct": 15.87,
+  "sdg_impact": "RL policy reduces average energy consumption by 44.32% compared to the fixed-rule baseline. This supports SDG 7 (Affordable and Clean Energy) by cutting unnecessary energy use during unoccupied hours while maintaining occupant comfort \u2014 directly reducing electricity costs and carbon emissions in smart buildings."
+}

@@ -1,0 +1,9 @@
+run_id: run_2
+episodes: 1000
+alpha: 0.2
+gamma: 0.95
+epsilon: 1.0
+epsilon_min: 0.05
+epsilon_decay: 0.997
+n_actions: 3
+description: "Q-learning v2 — higher alpha and gamma, slower epsilon decay for deeper exploration"

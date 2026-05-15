@@ -1,66 +1,161 @@
 # Smart Building Energy Management — RL + MLOps
 
 ## Problem Statement
-Train a Q-learning agent to manage energy in a smart building 
-by controlling AC and lighting to minimize energy usage 
-while maintaining occupant comfort.
+Train a Q-learning agent to optimally control HVAC and lighting in a smart building
+to **minimize energy consumption** while maintaining **occupant comfort**.
+
+The agent observes the current hour, temperature, and occupancy level, then decides
+whether to keep systems off, run at low power, or high power — learning over thousands
+of simulated building-days.
 
 ## SDG Connection
 **SDG 7 — Affordable and Clean Energy**
-Reducing unnecessary energy consumption in buildings 
-directly supports SDG 7 by promoting energy efficiency.
 
-## Project Structure
-Smart_Building_RL/
-├── sim/
-│   ├── environment.py   # building simulator
-│   ├── agent.py         # Q-learning agent
-│   └── train.py         # training loop
-├── configs/
-│   └── qlearning_v1.yaml
-├── experiments/
-│   └── results.csv
-├── policy_v1.pkl
-├── policy_v2_explored.pkl
-└── README.md
-
-## How to Reproduce
-1. Clone the repo
-```bash
-git clone https://github.com/AashishSrinivasa/Smart-Building-RL.git
-cd Smart-Building-RL
-```
-
-2. Install dependencies
-```bash
-pip install numpy
-```
-
-3. Run training
-```bash
-python sim/train.py
-```
-
-## Monitoring Plan
-If deployed in a real building we would monitor:
-- Average energy consumption per hour
-- Occupant comfort score
-- Episodes where agent chose wrong action
-- Epsilon value over time to track exploration vs exploitation
-
-## Results
-Training over 1000 episodes shows the agent learns to:
-- Turn devices off during unoccupied hours
-- Use low energy mode during mild occupancy
-- Balance comfort and energy saving effectively
+Buildings account for ~40% of global energy consumption. By learning to turn systems
+off when rooms are empty and right-size energy use to actual occupancy,
+the RL agent directly supports SDG 7: promoting energy efficiency and reducing
+unnecessary electricity use. Our results show the RL policy reduces average
+energy consumption compared to a naive fixed-rule controller.
 
 ## Algorithm Choice
-Q-learning was chosen because the state space (hour, temperature, 
-occupancy, energy) is discrete and small, making a Q-table 
-approach efficient and easy to interpret.
+**Q-learning** — chosen because:
+- The state space (hour × temp × occupancy × energy = 24×3×3×3 = 648 states) is discrete and small.
+- A tabular Q-table is efficient, interpretable, and fast to train.
+- No function approximation is needed at this scale.
 
-## Training Discussion
-Average reward improves over the first 200 episodes as the agent 
-learns to turn off devices during unoccupied hours. It stabilizes 
-around 0.4-0.5 after epsilon decays, showing the agent has learned 
-a consistent policy.
+## State, Action, Reward
+| Component | Definition |
+|-----------|-----------|
+| **State** | `(hour [0-23], temperature [0-2], occupancy [0-2], energy [0-2])` |
+| **Action** | `0` = all off, `1` = low power, `2` = high power |
+| **Reward** | `comfort_score − 0.5 × energy_used` per timestep |
+
+Comfort score = 1.0 if the action meets or exceeds the occupancy need (or room is empty), else 0.
+
+## Exploration Strategy
+**ε-greedy** with exponential decay:
+- Start: ε = 1.0 (fully random / explore)
+- Decay: ε × 0.995 per step
+- Minimum: ε = 0.1 (always some exploration)
+
+As ε decays, the agent transitions from exploration to exploitation of the learned Q-table.
+
+## Project Structure
+```
+Smart_Building_RL/
+├── sim/
+│   ├── environment.py      # Building simulator (state transitions, rewards)
+│   ├── agent.py            # Q-learning agent (Q-table, ε-greedy, update rule)
+│   ├── train.py            # Training loop with --config flag and CSV/JSON logging
+│   ├── baseline.py         # Fixed-rule controller (comparison baseline)
+│   ├── compare.py          # Baseline vs RL evaluation + plots
+│   └── plot.py             # Training curve plots
+├── configs/
+│   ├── qlearning_v1.yaml   # Baseline config: α=0.1, γ=0.9
+│   └── qlearning_v2.yaml   # Tuned config:   α=0.2, γ=0.95, slower decay
+├── experiments/
+│   ├── results.csv                 # Per-episode training metrics (all runs)
+│   ├── log_run_1.json              # Run 1 summary log
+│   ├── log_run_2.json              # Run 2 summary log
+│   ├── baseline_results.json       # Fixed-rule baseline metrics
+│   ├── comparison_results.json     # RL vs Baseline comparison + SDG impact
+│   ├── reward_plot.png             # Training reward curve
+│   ├── energy_plot.png             # Training energy curve
+│   ├── comparison_plot.png         # RL vs Baseline reward comparison
+│   └── queue_plot.png              # RL vs Baseline energy comparison
+├── policy_v1.pkl               # Policy saved at episode 500
+├── policy_v2_explored.pkl      # Final policy after full training
+└── README.md
+```
+
+## How to Reproduce
+
+### 1. Clone the repo
+```bash
+git clone https://github.com/AashishSrinivasa/Smart_Building_RL.git
+cd Smart_Building_RL
+```
+
+### 2. Install dependencies
+```bash
+pip install numpy pyyaml matplotlib pandas
+```
+
+### 3. Run training (config v1)
+```bash
+python sim/train.py --config configs/qlearning_v1.yaml
+```
+This trains two runs (run_1 with v1 config, run_2 with v2 config) and saves:
+- `experiments/results.csv`
+- `experiments/log_run_1.json`, `log_run_2.json`
+- `policy_v1.pkl`, `policy_v2_explored.pkl`
+
+### 4. Generate training plots
+```bash
+python sim/plot.py
+```
+
+### 5. Run baseline vs RL comparison
+```bash
+python sim/compare.py
+```
+Outputs comparison table to terminal + saves comparison plots.
+
+### 6. Run baseline only
+```bash
+python sim/baseline.py
+```
+
+## Git Tags (Experiment Versions)
+| Tag | Description |
+|-----|-------------|
+| `exp-qlearning-1` | Run 1: α=0.1, γ=0.9, 1000 episodes |
+| `exp-qlearning-2` | Run 2: α=0.2, γ=0.95, 1000 episodes |
+
+## Baseline vs RL Policy — Results
+*(Generated by `python sim/compare.py` — see `experiments/comparison_results.json`)*
+
+| Metric | Fixed-Rule Baseline | RL Policy |
+|--------|-------------------|-----------|
+| Avg Reward (higher=better) | see comparison_results.json | see comparison_results.json |
+| Avg Energy Used (lower=better) | see comparison_results.json | see comparison_results.json |
+| Avg Comfort (higher=better) | see comparison_results.json | see comparison_results.json |
+
+## Results and Analysis
+
+**When RL performs better:**
+- During unoccupied hours (night): the fixed-rule keeps systems at low power; RL learns to turn everything off.
+- When occupancy is low (1 person): RL uses action 1; fixed-rule does the same, so RL matches it.
+- With high occupancy: RL correctly escalates to action 2 for comfort; fixed-rule underserves.
+
+**When RL behaves unexpectedly:**
+- Early training (high ε): reward is noisy and sometimes worse than the fixed rule.
+- Rare state combinations not seen during training: Q-values default to zero and behaviour is random.
+
+**Sensitivity to traffic/occupancy pattern changes:**
+- If office hours shift (e.g. shift work, night-time peak), the RL agent would need retraining since its policy is tied to the occupancy model used during training.
+- The fixed-rule controller would fail entirely in such scenarios.
+
+## SDG 7 — Impact Statement
+By training the RL agent to match energy output to actual occupancy, we eliminate
+the energy wasted by always-on systems in empty rooms. This translates directly to:
+- Lower electricity bills for building operators
+- Reduced carbon emissions from the energy grid
+- A scalable, adaptive approach vs one-size-fits-all timers
+
+This supports **SDG 7 (Affordable and Clean Energy)** by promoting energy efficiency
+through intelligent, data-driven building control.
+
+## Monitoring Plan (Production Design)
+If deployed in a real smart building, we would monitor:
+- **Average energy consumption per hour** — detect if energy use rises unexpectedly
+- **Occupant comfort score** — alert if comfort drops below threshold (e.g. < 0.8)
+- **ε (epsilon) value** — ensure the agent is not stuck in pure exploitation
+- **Q-table coverage** — flag states visited rarely (under-trained regions)
+- **Reward drift** — if average reward drops over 7-day window, trigger retraining
+
+## Saved Policies
+| File | Description |
+|------|-------------|
+| `policy_v1.pkl` | Checkpoint at episode 500 (partial learning) |
+| `policy_v2_explored.pkl` | Final policy after full training + decay |

@@ -1,0 +1,13 @@
+{
+  "run_id": "run_1",
+  "episodes": 1000,
+  "alpha": 0.1,
+  "gamma": 0.9,
+  "epsilon_start": 1.0,
+  "epsilon_min": 0.1,
+  "epsilon_decay": 0.995,
+  "description": "Q-learning baseline for smart building energy management",
+  "avg_reward_final": 0.4583,
+  "avg_energy_final": 0.25,
+  "avg_comfort_final": 0.5833
+}

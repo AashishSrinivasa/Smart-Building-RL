@@ -1,0 +1,7 @@
+{
+  "controller": "FixedRule",
+  "episodes": 1000,
+  "avg_reward": 0.366,
+  "avg_energy": 0.4167,
+  "avg_comfort": 0.5743
+}
