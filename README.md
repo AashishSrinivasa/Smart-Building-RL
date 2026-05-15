@@ -154,6 +154,14 @@ If deployed in a real smart building, we would monitor:
 - **Q-table coverage** — flag states visited rarely (under-trained regions)
 - **Reward drift** — if average reward drops over 7-day window, trigger retraining
 
+## Limitations
+- **Small dataset**: The Q-table is trained on a simplified 3-level discrete state space. Real buildings have continuous, high-dimensional sensor data that would require function approximation (e.g., DQN).
+- **Single-zone model**: The simulator models one zone. Multi-zone buildings with interdependent HVAC systems are significantly more complex.
+- **Simulated occupancy**: Occupancy is randomly sampled from a fixed distribution. Real occupancy follows irregular human patterns (meetings, holidays, remote work) that the agent has not seen.
+- **No weather model**: External temperature is randomised rather than driven by actual weather forecasts, which limits real-world accuracy.
+- **Static reward function**: The comfort vs. energy trade-off weight (0.5) is fixed. In practice, this should be user-configurable and may change by season or building type.
+- **No safety constraints**: The agent can choose any action at any time. A real deployment would need hard constraints (e.g., temperature must stay between 18-26°C for safety).
+
 ## Saved Policies
 | File | Description |
 |------|-------------|

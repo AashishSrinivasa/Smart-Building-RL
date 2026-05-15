@@ -95,14 +95,15 @@ def train(cfg):
         avg_comfort = round(total_comfort / 24, 4)
 
         results.append({
-            "run_id":       run_id,
-            "episode":      episode + 1,
-            "avg_reward":   avg_reward,
-            "avg_energy":   avg_energy,
-            "avg_comfort":  avg_comfort,
-            "epsilon":      round(agent.epsilon, 4),
-            "alpha":        alpha,
-            "gamma":        gamma,
+            "run_id":            run_id,
+            "episode":           episode + 1,
+            "avg_reward":        avg_reward,
+            "avg_energy":        avg_energy,
+            "avg_waiting_time":  avg_energy,   # smart-building equivalent of waiting time (energy cost per hour)
+            "avg_comfort":       avg_comfort,
+            "epsilon":           round(agent.epsilon, 4),
+            "alpha":             alpha,
+            "gamma":             gamma,
         })
 
         # Save policy at halfway point
@@ -140,9 +141,10 @@ def train(cfg):
         "epsilon_min":     agent.epsilon_min,
         "epsilon_decay":   agent.epsilon_decay,
         "description":     cfg.get("description", ""),
-        "avg_reward_final": results[-1]["avg_reward"],
-        "avg_energy_final": results[-1]["avg_energy"],
-        "avg_comfort_final":results[-1]["avg_comfort"],
+        "avg_reward_final":       results[-1]["avg_reward"],
+        "avg_energy_final":       results[-1]["avg_energy"],
+        "avg_waiting_time_final": results[-1]["avg_energy"],   # smart-building equivalent of waiting time
+        "avg_comfort_final":      results[-1]["avg_comfort"],
     }
     log_path = f"experiments/log_{run_id}.json"
     with open(log_path, "w") as f:

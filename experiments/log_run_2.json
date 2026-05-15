@@ -7,7 +7,8 @@
   "epsilon_min": 0.05,
   "epsilon_decay": 0.997,
   "description": "Q-learning v2 \u2014 higher alpha and gamma, slower epsilon decay for deeper exploration",
-  "avg_reward_final": 0.375,
-  "avg_energy_final": 0.1667,
-  "avg_comfort_final": 0.4583
+  "avg_reward_final": 0.5833,
+  "avg_energy_final": 0.0833,
+  "avg_waiting_time_final": 0.0833,
+  "avg_comfort_final": 0.625
 }

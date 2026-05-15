@@ -7,7 +7,8 @@
   "epsilon_min": 0.1,
   "epsilon_decay": 0.995,
   "description": "Q-learning baseline for smart building energy management",
-  "avg_reward_final": 0.4583,
+  "avg_reward_final": 0.4167,
   "avg_energy_final": 0.25,
-  "avg_comfort_final": 0.5833
+  "avg_waiting_time_final": 0.25,
+  "avg_comfort_final": 0.5417
 }
